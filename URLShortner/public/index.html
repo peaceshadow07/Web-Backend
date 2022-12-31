@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortner</title>
+</head>
+<body>
+    <main>
+        <section>
+            <h1>URL Shortner</h1>
+            <form class="url-form" >
+                <input type="text" placeholder="Enter the url to shorten" class="url-input">
+                <button type="submit">Shorten</button>
+            </form>
+        </section>
+        <section class="result-section">
+
+        </section>
+    </main>
+
+    <script>
+        const FORM = document.querySelector(".url-form");
+        const RESULT = document.querySelector(".result-section");
+
+        FORM.addEventListener("submit", event => {
+            event.preventDefault();
+
+            const INPUT = document.querySelector(".url-input");
+            console.log(INPUT.value);
+            var myHeaders = new Headers();
+            myHeaders.append("Accept", "application/json");
+            myHeaders.append("Content-Type", "application/json");
+
+            var raw = JSON.stringify({
+            "longUrl": INPUT.value
+            });
+
+            var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            };
+
+            fetch("/urlapi", requestOptions)
+            .then(response => {
+                if(!response.ok){
+                    throw Error(response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("URL is :",data.shortUrl);   
+
+                RESULT.innerHTML = `<div class="result">
+                    <a target="_blank" href="${data.shortUrl}" rel="noopener noreferrer">${data.shortUrl}</a>
+                    </div>`;
+
+            })
+            .catch(error => console.log('error', error));
+
+
+        });
+
+    </script>
+</body>
+</html>
